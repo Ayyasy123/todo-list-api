@@ -33,20 +33,20 @@ func (i *ItemHandler) CreateItem(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Item created successfully", "data": res})
 }
 
-func (i *ItemHandler) GetItemsByChecklistID(c *gin.Context) {
-	checklistID, err := strconv.Atoi(c.Param("checklist_id"))
+func (i *ItemHandler) GetItemByID(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid checklist ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid item ID"})
 		return
 	}
 
-	items, err := i.itemUsecase.GetItemsByChecklistID(checklistID)
+	res, err := i.itemUsecase.GetItemByID(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": items})
+	c.JSON(http.StatusOK, gin.H{"data": res})
 }
 
 func (i *ItemHandler) UpdateItem(c *gin.Context) {
@@ -69,6 +69,22 @@ func (i *ItemHandler) UpdateItem(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Item updated successfully", "data": res})
+}
+
+func (i *ItemHandler) UpdateItemStatus(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid item ID"})
+		return
+	}
+
+	err = i.itemUsecase.UpdateItemStatus(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Item status updated successfully"})
 }
 
 func (i *ItemHandler) DeleteItem(c *gin.Context) {

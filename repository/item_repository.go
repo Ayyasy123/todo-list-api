@@ -7,6 +7,7 @@ import (
 
 type ItemRepository interface {
 	CreateItem(item *models.Item) error
+	GetItemByID(id int) (*models.Item, error)
 	GetItemsByChecklistID(checklistID int) ([]models.Item, error)
 	UpdateItem(item *models.Item) error
 	DeleteItem(id int) error
@@ -22,6 +23,12 @@ func NewItemRepository(db *gorm.DB) ItemRepository {
 
 func (r *itemRepository) CreateItem(item *models.Item) error {
 	return r.db.Create(item).Error
+}
+
+func (r *itemRepository) GetItemByID(id int) (*models.Item, error) {
+	var item models.Item
+	err := r.db.First(&item, id).Error
+	return &item, err
 }
 
 func (r *itemRepository) GetItemsByChecklistID(checklistID int) ([]models.Item, error) {

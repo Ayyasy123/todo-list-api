@@ -7,8 +7,9 @@ import (
 
 type ItemUsecase interface {
 	CreateItem(req *models.CreateItemReq) (*models.ItemRes, error)
-	GetItemsByChecklistID(checklistID int) ([]models.Item, error)
+	GetItemByID(id int) (*models.ItemRes, error)
 	UpdateItem(id int, req *models.UpdateItemReq) (*models.ItemRes, error)
+	UpdateItemStatus(id int) error
 	DeleteItem(id int) error
 }
 
@@ -40,8 +41,18 @@ func (r *itemUsecase) CreateItem(req *models.CreateItemReq) (*models.ItemRes, er
 	}, nil
 }
 
-func (r *itemUsecase) GetItemsByChecklistID(checklistID int) ([]models.Item, error) {
-	return r.itemRepo.GetItemsByChecklistID(checklistID)
+func (r *itemUsecase) GetItemByID(id int) (*models.ItemRes, error) {
+	item, err := r.itemRepo.GetItemByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.ItemRes{
+		ID:          item.ID,
+		ChecklistID: item.ChecklistID,
+		Description: item.Description,
+		Completed:   item.Completed,
+	}, nil
 }
 
 func (r *itemUsecase) UpdateItem(id int, req *models.UpdateItemReq) (*models.ItemRes, error) {
@@ -63,6 +74,16 @@ func (r *itemUsecase) UpdateItem(id int, req *models.UpdateItemReq) (*models.Ite
 		Description: item.Description,
 		Completed:   item.Completed,
 	}, nil
+}
+
+func (r *itemUsecase) UpdateItemStatus(id int) error {
+	item, err := r.itemRepo.GetItemByID(id)
+	if err != nil {
+		return err
+	}
+
+	item.Completed = !item.Completed
+	return r.itemRepo.UpdateItem(item)
 }
 
 func (r *itemUsecase) DeleteItem(id int) error {
