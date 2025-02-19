@@ -7,7 +7,7 @@ import (
 
 type ChecklistUsecase interface {
 	CreateChecklist(checklist *models.Checklist) error
-	GetChecklists() ([]models.Checklist, error)
+	GetChecklists() ([]models.ChecklistRes, error)
 	GetChecklistByID(id int) (*models.Checklist, error)
 	UpdateChecklist(checklist *models.Checklist) error
 	DeleteChecklist(id int) error
@@ -25,8 +25,25 @@ func (c *checklistUsecase) CreateChecklist(checklist *models.Checklist) error {
 	return c.checklistRepo.CreateChecklist(checklist)
 }
 
-func (c *checklistUsecase) GetChecklists() ([]models.Checklist, error) {
-	return c.checklistRepo.GetChecklists()
+func (c *checklistUsecase) GetChecklists() ([]models.ChecklistRes, error) {
+	checklists, err := c.checklistRepo.GetChecklists()
+	if err != nil {
+		return nil, err
+	}
+
+	var res []models.ChecklistRes
+	for _, checklist := range checklists {
+		res = append(res, models.ChecklistRes{
+			ID:        checklist.ID,
+			UserID:    checklist.UserID,
+			Title:     checklist.Title,
+			CreatedAt: checklist.CreatedAt,
+			UpdatedAt: checklist.UpdatedAt,
+			Items:     checklist.Items,
+		})
+	}
+
+	return res, nil
 }
 
 func (c *checklistUsecase) GetChecklistByID(id int) (*models.Checklist, error) {
