@@ -42,7 +42,7 @@ func SetupItemRoutes(db *gorm.DB, r *gin.Engine) {
 	itemRoutes.Use(middleware.JWTAuth())
 	{
 		itemRoutes.POST("/", itemHandler.CreateItem)           // 7. API untuk membuat item-item to-do di dalam checklist
-		itemRoutes.GET("/", itemHandler.GetItemByID)           // 8. API detail item
+		itemRoutes.GET("/:id", itemHandler.GetItemByID)        // 8. API detail item
 		itemRoutes.PUT("/:id", itemHandler.UpdateItem)         // 9. API untuk mengubah item-item di dalam checklist
 		itemRoutes.PATCH("/:id", itemHandler.UpdateItemStatus) // 10. API untuk mengubah status dari item di dalam checklist
 		itemRoutes.DELETE("/:id", itemHandler.DeleteItem)      // 11. API untuk menghapus item dari checklist
