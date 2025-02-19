@@ -33,7 +33,7 @@ func (r *checklistRepository) GetChecklists() ([]models.Checklist, error) {
 
 func (r *checklistRepository) GetChecklistByID(id int) (*models.Checklist, error) {
 	var checklist models.Checklist
-	err := r.db.First(&checklist, id).Preload("Items").Error
+	err := r.db.Preload("Items").First(&checklist, id).Error
 	return &checklist, err
 }
 
